@@ -1,0 +1,509 @@
+# 1249. Minimum Remove to Make Valid Parentheses
+
+## Problem Statement
+
+Given a string `s` containing lowercase English letters and the characters `'('` and `')'`, remove the minimum number of parentheses so that the resulting string is valid.
+
+A string is considered valid if:
+
+- Every opening parenthesis `'('` has a corresponding closing parenthesis `')'`.
+- Every closing parenthesis `')'` has a corresponding opening parenthesis `'('`.
+- Parentheses are properly nested.
+
+Return the resulting valid string.
+
+---
+
+## Example 1
+
+### Input
+```text
+s = "lee(t(c)o)de)"
+```
+
+### Output
+```text
+"lee(t(c)o)de"
+```
+
+### Explanation
+
+The last `')'` has no matching `'('`, so it is removed.
+
+---
+
+## Example 2
+
+### Input
+```text
+s = "a)b(c)d"
+```
+
+### Output
+```text
+"ab(c)d"
+```
+
+### Explanation
+
+The `')'` at index 1 has no matching `'('`, so it is removed.
+
+---
+
+## Example 3
+
+### Input
+```text
+s = "))(("
+```
+
+### Output
+```text
+""
+```
+
+### Explanation
+
+All parentheses are invalid and must be removed.
+
+---
+
+## Example 4
+
+### Input
+```text
+s = "(a(b(c)d)"
+```
+
+### Output
+```text
+"a(b(c)d)"
+```
+
+### Explanation
+
+The first `'('` remains unmatched and is removed.
+
+---
+
+## Constraints
+
+```text
+1 <= s.length <= 10^5
+
+s consists of:
+- lowercase English letters
+- '('
+- ')'
+```
+
+---
+
+# Concept Used
+
+- Stack
+- HashSet
+- StringBuilder
+- Parentheses Matching
+- String Manipulation
+
+---
+
+# Approach
+
+1. Traverse the string from left to right.
+2. Store indices of all opening parentheses `'('` in a stack.
+3. When a closing parenthesis `')'` is found:
+   - If a matching `'('` exists in the stack, pop it.
+   - Otherwise, mark the current index for removal.
+4. After traversal, any index left in the stack corresponds to an unmatched `'('`.
+5. Add all unmatched `'('` indices to the removal set.
+6. Build the final string by skipping all invalid indices.
+
+---
+
+# Dry Run
+
+### Input
+
+```text
+s = "a)b(c)d"
+```
+
+### Traversal
+
+```text
+Index 0 → 'a'
+Ignore
+
+Index 1 → ')'
+No matching '('
+Remove Set = {1}
+
+Index 2 → 'b'
+Ignore
+
+Index 3 → '('
+Stack = [3]
+
+Index 4 → 'c'
+Ignore
+
+Index 5 → ')'
+Match found
+Pop Stack
+Stack = []
+
+Index 6 → 'd'
+Ignore
+```
+
+### Build Result
+
+```text
+Skip index 1
+
+Result = "ab(c)d"
+```
+
+---
+
+# Java Solution
+
+```java
+class Solution {
+    public String minRemoveToMakeValid(String s) {
+
+        Stack<Integer> st = new Stack<>();
+        HashSet<Integer> hs = new HashSet<>();
+
+        for (int i = 0; i < s.length(); i++) {
+
+            char ch = s.charAt(i);
+
+            if (ch == '(') {
+                st.push(i);
+            } 
+            else if (ch == ')') {
+
+                if (!st.isEmpty()) {
+                    st.pop();
+                } 
+                else {
+                    hs.add(i);
+                }
+            }
+        }
+
+        while (!st.isEmpty()) {
+            hs.add(st.pop());
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < s.length(); i++) {
+
+            if (hs.contains(i)) {
+                continue;
+            }
+
+            sb.append(s.charAt(i));
+        }
+
+        return sb.toString();
+    }
+}
+```
+
+---
+
+# Line-by-Line Explanation
+
+### Create a Stack
+
+```java
+Stack<Integer> st = new Stack<>();
+```
+
+Stores indices of unmatched opening parentheses `'('`.
+
+---
+
+### Create a HashSet
+
+```java
+HashSet<Integer> hs = new HashSet<>();
+```
+
+Stores indices that should be removed.
+
+---
+
+### Traverse the String
+
+```java
+for (int i = 0; i < s.length(); i++)
+```
+
+Visit every character exactly once.
+
+---
+
+### Handle Opening Parenthesis
+
+```java
+if (ch == '(')
+```
+
+Found an opening parenthesis.
+
+```java
+st.push(i);
+```
+
+Store its index.
+
+---
+
+### Handle Closing Parenthesis
+
+```java
+else if (ch == ')')
+```
+
+Found a closing parenthesis.
+
+```java
+if (!st.isEmpty())
+```
+
+Check whether a matching opening parenthesis exists.
+
+```java
+st.pop();
+```
+
+Match found, remove opening parenthesis from stack.
+
+```java
+hs.add(i);
+```
+
+No match found, mark current closing parenthesis for removal.
+
+---
+
+### Handle Remaining Opening Parentheses
+
+```java
+while (!st.isEmpty())
+```
+
+All remaining indices are unmatched opening parentheses.
+
+```java
+hs.add(st.pop());
+```
+
+Mark them for removal.
+
+---
+
+### Build Final String
+
+```java
+StringBuilder sb = new StringBuilder();
+```
+
+Stores the final valid string.
+
+```java
+if (hs.contains(i))
+```
+
+Skip invalid indices.
+
+```java
+sb.append(s.charAt(i));
+```
+
+Append valid characters.
+
+---
+
+### Return Answer
+
+```java
+return sb.toString();
+```
+
+Return the final valid string.
+
+---
+
+# Time Complexity
+
+### First Traversal
+
+```text
+O(n)
+```
+
+### Second Traversal
+
+```text
+O(n)
+```
+
+### Overall
+
+```text
+O(n)
+```
+
+---
+
+# Space Complexity
+
+### Stack
+
+```text
+O(n)
+```
+
+Stores indices of opening parentheses.
+
+### HashSet
+
+```text
+O(n)
+```
+
+Stores invalid indices.
+
+### Overall
+
+```text
+O(n)
+```
+
+---
+
+# Interview Preparation Notes
+
+### Why Use a Stack?
+
+A stack helps match every closing parenthesis `')'` with the most recent unmatched opening parenthesis `'('`.
+
+---
+
+### Why Store Indices Instead of Characters?
+
+We need to remove specific characters from the original string. Storing indices makes reconstructing the final string simple.
+
+---
+
+### Why Use a HashSet?
+
+HashSet provides:
+
+```text
+O(1)
+```
+
+average lookup time while checking whether an index should be skipped.
+
+---
+
+### Edge Cases
+
+#### Case 1
+
+```text
+Input: "))(("
+Output: ""
+```
+
+All parentheses are invalid.
+
+---
+
+#### Case 2
+
+```text
+Input: "abcde"
+Output: "abcde"
+```
+
+No parentheses to validate.
+
+---
+
+#### Case 3
+
+```text
+Input: "((abc))"
+Output: "((abc))"
+```
+
+Already valid.
+
+---
+
+#### Case 4
+
+```text
+Input: "((abc)"
+Output: "(abc)"
+```
+
+One opening parenthesis is removed.
+
+---
+
+# Alternative Approach
+
+A two-pass greedy solution can also solve this problem without using a HashSet.
+
+However, the Stack + HashSet approach is easier to understand, implement, and explain during interviews.
+
+---
+
+# Similar Problems
+
+1. LeetCode 20 - Valid Parentheses
+2. LeetCode 32 - Longest Valid Parentheses
+3. LeetCode 301 - Remove Invalid Parentheses
+4. LeetCode 921 - Minimum Add to Make Parentheses Valid
+5. LeetCode 1541 - Minimum Insertions to Balance a Parentheses String
+
+---
+
+# Interview Summary
+
+✅ Pattern: Stack + String Manipulation
+
+✅ Data Structures Used:
+- Stack
+- HashSet
+- StringBuilder
+
+✅ Time Complexity:
+```text
+O(n)
+```
+
+✅ Space Complexity:
+```text
+O(n)
+```
+
+✅ Difficulty:
+```text
+Medium
+```
+
+✅ LeetCode:
+```text
+1249. Minimum Remove to Make Valid Parentheses
+```
